@@ -11,21 +11,21 @@ using namespace std;
 // --------------------------------------
 auto start_time = chrono::steady_clock::now();
 
-int aÒosTranscurridos() {
+int a√±osTranscurridos() {
     auto now = chrono::steady_clock::now();
     auto diff = chrono::duration_cast<chrono::seconds>(now - start_time).count();
-    return (int)diff; // 1 segundo = 1 aÒo
+    return (int)diff; // 1 segundo = 1 a√±o
 }
 
 // --------------------------------------
-//           NODO DEL ¡RBOL
+//           NODO DEL √ÅRBOL
 // --------------------------------------
 struct Nodo {
     string nombre;
     string tipo;    // Agua, Fuego, etc.
     string genero;  // Hombre/Mujer
     string estado;  // Vivo/Muerto
-    int nacimiento; // segundo en el que naciÛ
+    int nacimiento; // segundo en el que naci√≥
 
     Nodo* padre;
     Nodo* izquierda;  // hijo 1
@@ -34,11 +34,11 @@ struct Nodo {
     Nodo(string n, string t, string g, string e, Nodo* p)
         : nombre(n), tipo(t), genero(g), estado(e), padre(p),
           izquierda(nullptr), derecha(nullptr) {
-        nacimiento = aÒosTranscurridos();
+        nacimiento = a√±osTranscurridos();
     }
 
     int edadActual() {
-        return aÒosTranscurridos() - nacimiento;
+        return a√±osTranscurridos() - nacimiento;
     }
 
     int hijos() {
@@ -50,13 +50,13 @@ struct Nodo {
 };
 
 // --------------------------------------
-//         ¡RBOL GENEAL”GICO
+//         √ÅRBOL GENEAL√ìGICO
 // --------------------------------------
 struct Arbol {
     Nodo* raiz;
 
     Arbol() {
-        // RaÌz autom·tica: Asteroide
+        // Ra√≠z autom√°tica: Asteroide
         raiz = new Nodo("Asteroide", "Roca", "None", "Vivo", nullptr);
 
         // Hijos iniciales muertos
@@ -80,7 +80,7 @@ struct Arbol {
         return nullptr;
     }
 
-    // Listar padres v·lidos (0 o 1 hijo)
+    // Listar padres v√°lidos (0 o 1 hijo)
     vector<Nodo*> padresDisponibles() {
         vector<Nodo*> lista;
         queue<Nodo*> q;
@@ -94,6 +94,94 @@ struct Arbol {
         }
         return lista;
     }
+
+   // Insertar pidiendo padre
+    void insertar() {
+        string nombre, tipo, genero, estado;
+
+        cout << "\n=== Nueva insercion ===\n";
+        cout << "Nombre: "; cin >> nombre;
+
+        if (buscar(nombre)) {
+            cout << "ERROR: Ya existe un personaje con ese nombre.\n";
+            return;
+        }
+
+        cout << "Tipo (Agua/Fuego/etc): ";
+        cin >> tipo;
+        cout << "Genero (Hombre/Mujer): ";
+        cin >> genero;
+        cout << "Estado (Vivo/Muerto): ";
+        cin >> estado;
+
+        vector<Nodo*> disponibles = padresDisponibles();
+
+        if (disponibles.empty()) {
+            cout << "No hay padres disponibles.\n";
+            return;
+        }
+
+        cout << "\nSeleccione padre:\n";
+        for (int i = 0; i < disponibles.size(); i++) {
+            cout << i+1 << ". " << disponibles[i]->nombre
+                 << " (hijos: " << disponibles[i]->hijos() << ")\n";
+        }
+
+        int op;
+        cin >> op;
+        if (op < 1 || op > disponibles.size()) {
+            cout << "Opci√≥n inv√°lida.\n";
+            return;
+        }
+
+        Nodo* padreSel = disponibles[op-1];
+        Nodo* nuevo = new Nodo(nombre, tipo, genero, estado, padreSel);
+
+        if (!padreSel->izquierda) padreSel->izquierda = nuevo;
+        else padreSel->derecha = nuevo;
+
+        cout << "Insertado correctamente bajo el padre: " << padreSel->nombre << "\n";
+    }
+
+    // Eliminar nodo si est√° permitido
+    void eliminar() {
+        string nombre;
+        cout << "\nNombre del personaje a eliminar: ";
+        cin >> nombre;
+
+        Nodo* objetivo = buscar(nombre);
+        if (!objetivo) {
+            cout << "No existe ese personaje.\n";
+            return;
+        }
+
+        if (objetivo == raiz) {
+            cout << "ERROR: No puedes eliminar la ra√≠z (Asteroide).\n";
+            return;
+        }
+
+        if (objetivo->hijos() > 0) {
+            cout << "ERROR: No se puede eliminar, tiene hijos.\n";
+            return;
+        }
+
+        int edad = objetivo->edadActual();
+        if (edad < 60) {
+            cout << "ERROR: Solo puede eliminarse si tiene m√°s de 60 a√±os.\n";
+            return;
+        }
+
+        // Desconectar del padre
+        if (objetivo->padre->izquierda == objetivo)
+            objetivo->padre->izquierda = nullptr;
+        else
+            objetivo->padre->derecha = nullptr;
+
+        delete objetivo;
+
+        cout << "Eliminado exitosamente.\n";
+    }
+
 
     // Insertar pidiendo padre
     void insertar() {
@@ -130,7 +218,7 @@ struct Arbol {
         int op;
         cin >> op;
         if (op < 1 || op > disponibles.size()) {
-            cout << "OpciÛn inv·lida.\n";
+            cout << "Opci√≥n inv√°lida.\n";
             return;
         }
 
@@ -143,7 +231,7 @@ struct Arbol {
         cout << "Insertado correctamente bajo el padre: " << padreSel->nombre << "\n";
     }
 
-    // Eliminar nodo si est· permitido
+    // Eliminar nodo si est√° permitido
     void eliminar() {
         string nombre;
         cout << "\nNombre del personaje a eliminar: ";
@@ -156,7 +244,7 @@ struct Arbol {
         }
 
         if (objetivo == raiz) {
-            cout << "ERROR: No puedes eliminar la raÌz (Asteroide).\n";
+            cout << "ERROR: No puedes eliminar la ra√≠z (Asteroide).\n";
             return;
         }
 
@@ -167,7 +255,7 @@ struct Arbol {
 
         int edad = objetivo->edadActual();
         if (edad < 60) {
-            cout << "ERROR: Solo puede eliminarse si tiene m·s de 60 aÒos.\n";
+            cout << "ERROR: Solo puede eliminarse si tiene m√°s de 60 a√±os.\n";
             return;
         }
 
@@ -184,7 +272,7 @@ struct Arbol {
 
     // Mostrar por niveles (generaciones)
     void mostrarGeneraciones() {
-        cout << "\n=== ¡RBOL POR GENERACIONES ===\n";
+        cout << "\n=== √ÅRBOL POR GENERACIONES ===\n";
 
         queue<pair<Nodo*, int>> q;
         q.push({raiz, 0});
@@ -241,4 +329,5 @@ int main() {
 
     return 0;
 }
+
 
