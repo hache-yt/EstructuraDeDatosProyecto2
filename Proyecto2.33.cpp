@@ -1,41 +1,41 @@
-#include <iostream>      // Librería estándar de entrada/salida (para usar cin/cout)
-#include <queue>         // Librería para usar colas (queue) (necesario para BFS y mostrar por generaciones)
-#include <string>        // Librería para manejar strings (cadenas de texto)
-#include <ctime>         // Librería para manejar fechas y tiempo (para la "edad" de los nodos)
-#include <vector>        // Librería para usar vectores dinámicos (para listas de padres disponibles)
+#include <iostream>      // LibrerÃ­a estÃ¡ndar de entrada/salida (para usar cin/cout)
+#include <queue>         // LibrerÃ­a para usar colas (queue) (necesario para BFS y mostrar por generaciones)
+#include <string>        // LibrerÃ­a para manejar strings (cadenas de texto)
+#include <ctime>         // LibrerÃ­a para manejar fechas y tiempo (para la "edad" de los nodos)
+#include <vector>        // LibrerÃ­a para usar vectores dinÃ¡micos (para listas de padres disponibles)
 
-using namespace std;     // Evita escribir std:: constantemente para tipos y funciones estándar
+using namespace std;     // Evita escribir std:: constantemente para tipos y funciones estÃ¡ndar
 
 // =========================
 // COLORES ANSI (para imprimir texto de colores en consola)
 // =========================
-#define RESET    "\033[0m"  // Código de escape ANSI para resetear el color a la configuración predeterminada
-#define ROJO     "\033[31m" // Código de escape ANSI para el color rojo
-#define VERDE    "\033[32m" // Código de escape ANSI para el color verde
-#define AMARILLO "\033[33m" // Código de escape ANSI para el color amarillo
-#define AZUL     "\033[34m"  // Código de escape ANSI para el color azul
+#define RESET    "\033[0m"  // CÃ³digo de escape ANSI para resetear el color a la configuraciÃ³n predeterminada
+#define ROJO     "\033[31m" // CÃ³digo de escape ANSI para el color rojo
+#define VERDE    "\033[32m" // CÃ³digo de escape ANSI para el color verde
+#define AMARILLO "\033[33m" // CÃ³digo de escape ANSI para el color amarillo
+#define AZUL     "\033[34m"  // CÃ³digo de escape ANSI para el color azul
 
 // --------------------------------------
 // TIEMPO GLOBAL DESDE QUE INICIA EL PROGRAMA
 // --------------------------------------
-time_t start_time = time(NULL);  // Almacena el número de segundos transcurridos desde 1/1/1970 al inicio del programa
+time_t start_time = time(NULL);  // Almacena el nÃºmero de segundos transcurridos desde 1/1/1970 al inicio del programa
 
-// Función para calcular los "años" (segundos) transcurridos desde el inicio del programa
+// FunciÃ³n para calcular los "aÃ±os" (segundos) transcurridos desde el inicio del programa
 int yearsElapsed() {
     return (int)(difftime(time(NULL), start_time));  // Calcula la diferencia entre el tiempo actual y el tiempo inicial, y lo devuelve como entero
 }
 
 // --------------------------------------
-// NODO DEL ÁRBOL
+// NODO DEL ÃRBOL
 // --------------------------------------
 struct Nodo {
-    string nombre;   // Nombre único del personaje
+    string nombre;   // Nombre Ãºnico del personaje
     string tipo;     // Tipo de elemento del personaje (Agua, Fuego, Roca, etc.)
-    string genero;   // Género del personaje (Hombre, Mujer)
+    string genero;   // GÃ©nero del personaje (Hombre, Mujer)
     string estado;   // Estado del personaje (Vivo, Muerto)
-    int nacimiento;  // El tiempo (en "años"/segundos) en que se creó este nodo
+    int nacimiento;  // El tiempo (en "aÃ±os"/segundos) en que se creÃ³ este nodo
 
-    Nodo* padre;     // Puntero al nodo padre en el árbol
+    Nodo* padre;     // Puntero al nodo padre en el Ã¡rbol
     Nodo* izquierda; // Puntero al hijo izquierdo
     Nodo* derecha;   // Puntero al hijo derecho
 
@@ -44,20 +44,20 @@ struct Nodo {
     {
         nombre = n;      // Asigna el nombre
         tipo = t;        // Asigna el tipo
-        genero = g;      // Asigna el género
+        genero = g;      // Asigna el gÃ©nero
         estado = e;      // Asigna el estado
         padre = p;       // Asigna el puntero al padre
         izquierda = NULL; // Inicializa el puntero del hijo izquierdo a nulo (sin hijo)
         derecha = NULL;  // Inicializa el puntero del hijo derecho a nulo (sin hijo)
-        nacimiento = yearsElapsed(); // Guarda el tiempo actual como la edad de creación
+        nacimiento = yearsElapsed(); // Guarda el tiempo actual como la edad de creaciÃ³n
     }
 
-    // Función para obtener la edad actual del nodo en "años" (segundos)
+    // FunciÃ³n para obtener la edad actual del nodo en "aÃ±os" (segundos)
     int edadActual() { 
         return yearsElapsed() - nacimiento; // Calcula la diferencia entre el tiempo actual y el tiempo de nacimiento
     }
 
-    // Función que devuelve la cantidad de hijos directos del nodo
+    // FunciÃ³n que devuelve la cantidad de hijos directos del nodo
     int hijos() {
         int h = 0;           // InicializSa el contador de hijos a cero
         if (izquierda) h++;  // Si el puntero izquierdo no es NULL (hay hijo), incrementa el contador
@@ -67,12 +67,12 @@ struct Nodo {
 };
 
 // =========================
-// Función para colorear nodos
+// FunciÃ³n para colorear nodos
 // =========================
 string colorNodo(Nodo* nodo) {
     if (nodo == NULL) return string("(NULL)"); // Si el nodo es nulo, retorna la cadena "(NULL)"
     if (nodo->tipo == "Roca" || nodo->nombre == "Asteroide")
-        return string(AMARILLO) + nodo->nombre + RESET; // Si es Roca o Asteroide, color amarillo
+        return string(AMARILLO) + nodo->nombre + RESET; // Si es Asteroide, color amarillo
     if (nodo->tipo == "Agua")
         return string(AZUL) + nodo->nombre + RESET;       // Si es Agua, color azul
     if (nodo->tipo == "Fuego")
@@ -81,24 +81,24 @@ string colorNodo(Nodo* nodo) {
 }
 
 // --------------------------------------
-// ÁRBOL GENEALÓGICO
+// ÃRBOL GENEALÃ“GICO
 // --------------------------------------
 struct Arbol {
-    Nodo* raiz;  // El nodo raíz del árbol (siempre "Asteroide")
+    Nodo* raiz;  // El nodo raÃ­z del Ã¡rbol (siempre "Asteroide")
 
-    // Constructor del árbol: se ejecuta al crear un objeto Arbol
+    // Constructor del Ã¡rbol: se ejecuta al crear un objeto Arbol
     Arbol() {
-        raiz = new Nodo("Asteroide", "Roca", "None", "Vivo", NULL); // Crea el nodo raíz (sin padre)
+        raiz = new Nodo("Asteroide", "Roca", "None", "Vivo", NULL); // Crea el nodo raÃ­z (sin padre)
         raiz->izquierda = new Nodo("Agua", "Agua", "None", "Muerto", raiz); // Crea el hijo izquierdo inicial
         raiz->derecha   = new Nodo("Fuego", "Fuego", "None", "Muerto", raiz); // Crea el hijo derecho inicial
     }
 
-    // Función para buscar un nodo por su nombre utilizando un recorrido por niveles (BFS)
+    // FunciÃ³n para buscar un nodo por su nombre utilizando un recorrido por niveles (BFS)
     Nodo* buscar(const string& nombre) {
-        if (raiz == NULL) return NULL; // Si el árbol está vacío, retorna NULL
+        if (raiz == NULL) return NULL; // Si el Ã¡rbol estÃ¡ vacÃ­o, retorna NULL
         queue<Nodo*> q;  // Declara una cola de punteros a Nodo para BFS (Breadth-First Search)
-        q.push(raiz);    // Inserta el nodo raíz para comenzar el recorrido
-        while (!q.empty()) {   // Repite mientras la cola no esté vacía
+        q.push(raiz);    // Inserta el nodo raÃ­z para comenzar el recorrido
+        while (!q.empty()) {   // Repite mientras la cola no estÃ© vacÃ­a
             Nodo* act = q.front();  // Obtiene el nodo al frente de la cola
             q.pop();             // Elimina el nodo del frente de la cola
             if (act->nombre == nombre) return act; // Si el nombre coincide, retorna el nodo encontrado
@@ -108,33 +108,33 @@ struct Arbol {
         return NULL; // Si el bucle termina sin encontrar el nodo, retorna NULL
     }
 
-    // Función que devuelve una lista (vector) de todos los nodos que pueden tener al menos un hijo más (menos de 2 hijos)
+    // FunciÃ³n que devuelve una lista (vector) de todos los nodos que pueden tener al menos un hijo mÃ¡s (menos de 2 hijos)
     vector<Nodo*> padresDisponibles() {
         vector<Nodo*> lista; // Vector para almacenar los nodos disponibles
         queue<Nodo*> q;       // Cola para BFS
-        q.push(raiz);         // Inicia el BFS desde la raíz
+        q.push(raiz);         // Inicia el BFS desde la raÃ­z
         while(!q.empty()) {
             Nodo* act = q.front(); q.pop(); // Saca el nodo actual de la cola
-            if (act->hijos() < 2) lista.push_back(act); // Si tiene 0 o 1 hijo, es un padre disponible, se añade a la lista
-            if (act->izquierda) q.push(act->izquierda); // Agrega hijo izquierdo a la cola para su posterior revisión
+            if (act->hijos() < 2) lista.push_back(act); // Si tiene 0 o 1 hijo, es un padre disponible, se aÃ±ade a la lista
+            if (act->izquierda) q.push(act->izquierda); // Agrega hijo izquierdo a la cola para su posterior revisiÃ³n
             if (act->derecha) q.push(act->derecha);      // Agrega hijo derecho a la cola
         }
         return lista; // Devuelve el vector con los padres disponibles
     }
 
-    // Función que pide al usuario seleccionar el tipo ("Agua" o "Fuego") y lo retorna
+    // FunciÃ³n que pide al usuario seleccionar el tipo ("Agua" o "Fuego") y lo retorna
     string elegirTipo() {
-        int op; // Variable para almacenar la opción del menú
+        int op; // Variable para almacenar la opciÃ³n del menÃº
         cout << "\nTipo:\n1. Agua\n2. Fuego\nOpcion: ";
-        cin >> op;           // Lee la opción ingresada por el usuario
-        while (op < 1 || op > 2) { // Bucle de validación para asegurar que la opción es 1 o 2
+        cin >> op;           // Lee la opciÃ³n ingresada por el usuario
+        while (op < 1 || op > 2) { // Bucle de validaciÃ³n para asegurar que la opciÃ³n es 1 o 2
             cout << "Opcion invalida. Intente de nuevo: ";
             cin >> op;
         }
         return (op == 1 ? "Agua" : "Fuego"); // Retorna "Agua" si es 1, o "Fuego" si es 2
     }
 
-    // Función que pide al usuario seleccionar el género ("Hombre" o "Mujer") y lo retorna
+    // FunciÃ³n que pide al usuario seleccionar el gÃ©nero ("Hombre" o "Mujer") y lo retorna
     string elegirGenero() {
         int op;
         cout << "\nGenero:\n1. Hombre\n2. Mujer\nOpcion: ";
@@ -146,7 +146,7 @@ struct Arbol {
         return (op == 1 ? "Hombre" : "Mujer");
     }
 
-    // Función que pide al usuario seleccionar el estado ("Vivo" o "Muerto") y lo retorna
+    // FunciÃ³n que pide al usuario seleccionar el estado ("Vivo" o "Muerto") y lo retorna
     string elegirEstado() {
         int op;
         cout << "\nEstado:\n1. Vivo\n2. Muerto\nOpcion: ";
@@ -158,7 +158,7 @@ struct Arbol {
         return (op == 1 ? "Vivo" : "Muerto");
     }
 
-    // Función principal para insertar un nuevo nodo en el árbol
+    // FunciÃ³n principal para insertar un nuevo nodo en el Ã¡rbol
     void insertar() {
         string nombre; // Variable para el nombre del nuevo personaje
         cout << "\n=== Nueva insercion ===\n";
@@ -167,15 +167,15 @@ struct Arbol {
 
         if (buscar(nombre)) {   // Llama a buscar para verificar si el nombre ya existe
             cout << "ERROR: Ya existe un personaje con ese nombre.\n";
-            return; // Termina la función si el nombre ya está en uso
+            return; // Termina la funciÃ³n si el nombre ya estÃ¡ en uso
         }
 
         string tipo = elegirTipo();       // Pide y obtiene el tipo del nuevo nodo
-        string genero = elegirGenero(); // Pide y obtiene el género
+        string genero = elegirGenero(); // Pide y obtiene el gÃ©nero
         string estado = elegirEstado(); // Pide y obtiene el estado
 
         vector<Nodo*> disponibles = padresDisponibles(); // Obtiene la lista de nodos que pueden ser padres
-        if ((int)disponibles.size() == 0) {             // Verifica si la lista está vacía
+        if ((int)disponibles.size() == 0) {             // Verifica si la lista estÃ¡ vacÃ­a
             cout << "No hay padres disponibles.\n";
             return; // Termina si no hay nodos con menos de 2 hijos
         }
@@ -183,27 +183,27 @@ struct Arbol {
         // Muestra la lista de padres disponibles al usuario
         cout << "\nSeleccione padre:\n";
         for (int i = 0; i < (int)disponibles.size(); i++) {
-            cout << (i+1) << ". " << disponibles[i]->nombre  // Imprime la opción numerada y el nombre del padre
+            cout << (i+1) << ". " << disponibles[i]->nombre  // Imprime la opciÃ³n numerada y el nombre del padre
                  << " (hijos: " << disponibles[i]->hijos() << ")\n"; // Muestra la cantidad actual de hijos del potencial padre
         }
 
-        int op; // Opción para seleccionar el padre
+        int op; // OpciÃ³n para seleccionar el padre
         cin >> op;
-        if (op < 1 || op > (int)disponibles.size()) {  // Valida que la opción esté dentro del rango
+        if (op < 1 || op > (int)disponibles.size()) {  // Valida que la opciÃ³n estÃ© dentro del rango
             cout << "Opcion invalida.\n";
             return;
         }
 
-        Nodo* padreSel = disponibles[op-1]; // Obtiene el puntero al nodo padre seleccionado (usando índice op-1)
-        Nodo* nuevo = new Nodo(nombre, tipo, genero, estado, padreSel); // Crea el nuevo nodo en memoria dinámica
+        Nodo* padreSel = disponibles[op-1]; // Obtiene el puntero al nodo padre seleccionado (usando Ã­ndice op-1)
+        Nodo* nuevo = new Nodo(nombre, tipo, genero, estado, padreSel); // Crea el nuevo nodo en memoria dinÃ¡mica
 
-        if (padreSel->izquierda == NULL) padreSel->izquierda = nuevo; // Si el hijo izquierdo está libre, asigna el nuevo nodo como izquierdo
+        if (padreSel->izquierda == NULL) padreSel->izquierda = nuevo; // Si el hijo izquierdo estÃ¡ libre, asigna el nuevo nodo como izquierdo
         else padreSel->derecha = nuevo; // Si no, asigna el nuevo nodo como hijo derecho
 
-        cout << "Insertado correctamente bajo el padre: " << padreSel->nombre << "\n"; // Confirma la inserción
+        cout << "Insertado correctamente bajo el padre: " << padreSel->nombre << "\n"; // Confirma la inserciÃ³n
     }
 
-    // Función para eliminar un nodo del árbol
+    // FunciÃ³n para eliminar un nodo del Ã¡rbol
     void eliminar() {
         string nombre;
         cout << "\nNombre del personaje a eliminar: ";
@@ -215,7 +215,7 @@ struct Arbol {
             return; // Termina si no se encuentra
         }
 
-        if (objetivo == raiz) { // Comprueba si el nodo es la raíz
+        if (objetivo == raiz) { // Comprueba si el nodo es la raÃ­z
             cout << "ERROR: No puedes eliminar la raiz (Asteroide).\n";
             return;
         }
@@ -225,7 +225,7 @@ struct Arbol {
             return;
         }
 
-        if (objetivo->edadActual() < 60) { // Comprueba si tiene al menos 60 "años"
+        if (objetivo->edadActual() < 60) { // Comprueba si tiene al menos 60 "aÃ±os"
             cout << "ERROR: Solo puede eliminarse si tiene mas de 60 anios.\n";
             return;
         }
@@ -240,19 +240,19 @@ struct Arbol {
         cout << "Eliminado exitosamente.\n";
     }
 
-    // Función para mostrar el árbol por niveles o generaciones (utiliza BFS)
+    // FunciÃ³n para mostrar el Ã¡rbol por niveles o generaciones (utiliza BFS)
     void mostrarGeneraciones() {
         cout << "\n=== ARBOL POR GENERACIONES ===\n";
         queue< pair<Nodo*, int> > q;  // Cola de pares: puntero a Nodo y su nivel de profundidad
-        q.push(pair<Nodo*, int>(raiz, 0)); // Inserta la raíz con nivel 0
-        int nivelActual = -1; // Variable para rastrear el nivel que se está imprimiendo
+        q.push(pair<Nodo*, int>(raiz, 0)); // Inserta la raÃ­z con nivel 0
+        int nivelActual = -1; // Variable para rastrear el nivel que se estÃ¡ imprimiendo
         while(!q.empty()) {
             pair<Nodo*, int> act = q.front(); q.pop(); // Saca el primer elemento de la cola
             Nodo* nodo = act.first; // Obtiene el puntero al nodo
             int nivel = act.second; // Obtiene el nivel del nodo
-            if (nivel != nivelActual) {  // Comprueba si se ha cambiado a una nueva generación
+            if (nivel != nivelActual) {  // Comprueba si se ha cambiado a una nueva generaciÃ³n
                 nivelActual = nivel; // Actualiza el nivel actual
-                cout << "\n--- GENERACION " << nivel << " ---\n"; // Imprime el encabezado de la nueva generación
+                cout << "\n--- GENERACION " << nivel << " ---\n"; // Imprime el encabezado de la nueva generaciÃ³n
             }
             cout << "Nombre: " << nodo->nombre
                  << " | Tipo: " << nodo->tipo
@@ -267,12 +267,12 @@ struct Arbol {
         }
     }
 
-    // Funciones de recorrido clásico del árbol (recursivos)
+    // Funciones de recorrido clÃ¡sico del Ã¡rbol (recursivos)
     void recorridoPreorden(Nodo* nodo) {  // Recorrido: Nodo - Izquierda - Derecha
-        if (!nodo) return;              // Caso base de la recursión: si el nodo es nulo, termina
+        if (!nodo) return;              // Caso base de la recursiÃ³n: si el nodo es nulo, termina
         cout << nodo->nombre << " ";    // Procesa/visita el nodo (imprime el nombre)
-        recorridoPreorden(nodo->izquierda); // Llama recursivamente para el subárbol izquierdo
-        recorridoPreorden(nodo->derecha);   // Llama recursivamente para el subárbol derecho
+        recorridoPreorden(nodo->izquierda); // Llama recursivamente para el subÃ¡rbol izquierdo
+        recorridoPreorden(nodo->derecha);   // Llama recursivamente para el subÃ¡rbol derecho
     }
 
     void recorridoInorden(Nodo* nodo) {   // Recorrido: Izquierda - Nodo - Derecha
@@ -289,84 +289,84 @@ struct Arbol {
         cout << nodo->nombre << " ";
     }
 
-    void preorden()  { recorridoPreorden(raiz); cout << "\n"; } // Función de envoltura: inicia el preorden desde la raíz
-    void inorden()   { recorridoInorden(raiz);  cout << "\n"; } // Función de envoltura: inicia el inorden desde la raíz
-    void postorden() { recorridoPostorden(raiz); cout << "\n"; } // Función de envoltura: inicia el postorden desde la raíz
+    void preorden()  { recorridoPreorden(raiz); cout << "\n"; } // FunciÃ³n de envoltura: inicia el preorden desde la raÃ­z
+    void inorden()   { recorridoInorden(raiz);  cout << "\n"; } // FunciÃ³n de envoltura: inicia el inorden desde la raÃ­z
+    void postorden() { recorridoPostorden(raiz); cout << "\n"; } // FunciÃ³n de envoltura: inicia el postorden desde la raÃ­z
 
     // ---------------------------
-    // ÁRBOL VERTICAL CENTRADO
+    // ÃRBOL VERTICAL CENTRADO
     // ---------------------------
-    struct NodoPos {   // Estructura auxiliar para guardar la posición de impresión de un nodo/rama
-        int x;         // Posición horizontal (columna)
+    struct NodoPos {   // Estructura auxiliar para guardar la posiciÃ³n de impresiÃ³n de un nodo/rama
+        int x;         // PosiciÃ³n horizontal (columna)
         int y;         // Nivel vertical (fila)
-        string texto;  // El texto (nombre coloreado o símbolo de rama) a imprimir
+        string texto;  // El texto (nombre coloreado o sÃ­mbolo de rama) a imprimir
     };
 
-    // Función recursiva para calcular las posiciones y textos de todos los elementos del árbol
+    // FunciÃ³n recursiva para calcular las posiciones y textos de todos los elementos del Ã¡rbol
     void buildTreeLines(Nodo* nodo, int x, int y, vector< vector<NodoPos> >& lines) {
-        if (!nodo) return;   // Caso base: si el nodo es nulo, termina la recursión
+        if (!nodo) return;   // Caso base: si el nodo es nulo, termina la recursiÃ³n
 
         while ((int)lines.size() <= y)   // Asegura que el vector 'lines' tenga un vector para el nivel 'y'
             lines.push_back(vector<NodoPos>()); // Si no existe, agrega un nuevo nivel
 
-        NodoPos np;          // Crea un objeto para la posición del nodo actual
-        np.x = x;            // Asigna la posición horizontal
+        NodoPos np;          // Crea un objeto para la posiciÃ³n del nodo actual
+        np.x = x;            // Asigna la posiciÃ³n horizontal
         np.y = y;            // Asigna el nivel vertical
         np.texto = colorNodo(nodo); // Obtiene y asigna el nombre del nodo con su color ANSI
         lines[y].push_back(np);      // Agrega este NodoPos a la lista de elementos en el nivel 'y'
 
-        int gap = 6; // Define la separación horizontal base entre el padre y sus hijos
+        int gap = 6; // Define la separaciÃ³n horizontal base entre el padre y sus hijos
 
-        // Procesamiento del Subárbol izquierdo
+        // Procesamiento del SubÃ¡rbol izquierdo
         if (nodo->izquierda) {
-            while ((int)lines.size() <= y + 1) lines.push_back(vector<NodoPos>()); // Asegura espacio para la línea de conexión
-            NodoPos branch;    // Crea un objeto para el símbolo de rama izquierda "/"
-            branch.x = x - gap; // Posición de la rama izquierda (un poco a la izquierda del padre)
+            while ((int)lines.size() <= y + 1) lines.push_back(vector<NodoPos>()); // Asegura espacio para la lÃ­nea de conexiÃ³n
+            NodoPos branch;    // Crea un objeto para el sÃ­mbolo de rama izquierda "/"
+            branch.x = x - gap; // PosiciÃ³n de la rama izquierda (un poco a la izquierda del padre)
             branch.y = y + 1; // Nivel de la rama (debajo del padre)
-            branch.texto = "/"; // El símbolo de rama
+            branch.texto = "/"; // El sÃ­mbolo de rama
             lines[y + 1].push_back(branch);
 
-            // Llamada recursiva para el hijo izquierdo, ajustando la posición horizontal
+            // Llamada recursiva para el hijo izquierdo, ajustando la posiciÃ³n horizontal
             buildTreeLines(nodo->izquierda, x - gap - (int)colorNodo(nodo->izquierda).length()/2, y + 2, lines); 
         }
 
-        // Procesamiento del Subárbol derecho
+        // Procesamiento del SubÃ¡rbol derecho
         if (nodo->derecha) {
-            while ((int)lines.size() <= y + 1) lines.push_back(vector<NodoPos>()); // Asegura espacio para la línea de conexión
-            NodoPos branch;    // Crea un objeto para el símbolo de rama derecha "\"
-            branch.x = x + gap; // Posición de la rama derecha (un poco a la derecha del padre)
+            while ((int)lines.size() <= y + 1) lines.push_back(vector<NodoPos>()); // Asegura espacio para la lÃ­nea de conexiÃ³n
+            NodoPos branch;    // Crea un objeto para el sÃ­mbolo de rama derecha "\"
+            branch.x = x + gap; // PosiciÃ³n de la rama derecha (un poco a la derecha del padre)
             branch.y = y + 1;
             branch.texto = "\\";
             lines[y + 1].push_back(branch);
 
-            // Llamada recursiva para el hijo derecho, ajustando la posición horizontal
+            // Llamada recursiva para el hijo derecho, ajustando la posiciÃ³n horizontal
             buildTreeLines(nodo->derecha, x + gap + (int)colorNodo(nodo).length()/2, y + 2, lines);
         }
     }
 
-    // Función para mostrar el árbol como un diagrama vertical centrado y coloreado
+    // FunciÃ³n para mostrar el Ã¡rbol como un diagrama vertical centrado y coloreado
     void mostrarArbolVertical() {
         cout << "\n=== ARBOL VERTICAL CENTRADO Y COLOREADO ===\n\n";
 
-        vector< vector<NodoPos> > lines; // Vector de vectores: cada vector interno representa un nivel/línea de impresión
+        vector< vector<NodoPos> > lines; // Vector de vectores: cada vector interno representa un nivel/lÃ­nea de impresiÃ³n
 
-        int width = 80;          // Ancho de impresión (número de caracteres)
-        int rootX = width / 2;   // Calcula la posición horizontal central para la raíz
+        int width = 80;          // Ancho de impresiÃ³n (nÃºmero de caracteres)
+        int rootX = width / 2;   // Calcula la posiciÃ³n horizontal central para la raÃ­z
 
-        buildTreeLines(raiz, rootX, 0, lines); // Inicia la construcción de las posiciones de impresión
+        buildTreeLines(raiz, rootX, 0, lines); // Inicia la construcciÃ³n de las posiciones de impresiÃ³n
 
-        // Bucle para iterar sobre cada nivel del árbol
+        // Bucle para iterar sobre cada nivel del Ã¡rbol
         for (int i = 0; i < (int)lines.size(); i++) {
-            string line(width * 2, ' '); // Inicializa una línea de impresión con el doble de ancho (para manejar caracteres ANSI)
+            string line(width * 2, ' '); // Inicializa una lÃ­nea de impresiÃ³n con el doble de ancho (para manejar caracteres ANSI)
             // Bucle para iterar sobre todos los elementos (nodos o ramas) en el nivel actual
             for (int j = 0; j < (int)lines[i].size(); j++) {
-                int pos = lines[i][j].x; // Posición horizontal del elemento
-                // Verifica que la posición esté dentro del rango de la línea
+                int pos = lines[i][j].x; // PosiciÃ³n horizontal del elemento
+                // Verifica que la posiciÃ³n estÃ© dentro del rango de la lÃ­nea
                 if (pos >= 0 && pos < (int)line.length())
-                    // Reemplaza los espacios en la línea con el texto (nombre o rama) del elemento
+                    // Reemplaza los espacios en la lÃ­nea con el texto (nombre o rama) del elemento
                     line.replace(pos, lines[i][j].texto.length(), lines[i][j].texto); 
             }
-            cout << line << "\n"; // Muestra la línea completa del nivel actual
+            cout << line << "\n"; // Muestra la lÃ­nea completa del nivel actual
         }
         cout << "\n";
     }
@@ -377,11 +377,11 @@ struct Arbol {
 // MAIN
 // --------------------------------------
 int main() {
-    Arbol arbol; // Crea una instancia del árbol genealógico
-    int op;      // Variable para almacenar la opción del menú
+    Arbol arbol; // Crea una instancia del Ã¡rbol genealÃ³gico
+    int op;      // Variable para almacenar la opciÃ³n del menÃº
 
-    do { // Bucle principal del menú
-        cout << "\n===== MENU =====\n"; // Muestra el encabezado del menú
+    do { // Bucle principal del menÃº
+        cout << "\n===== MENU =====\n"; // Muestra el encabezado del menÃº
         cout << "1. Insertar personaje\n";
         cout << "2. Eliminar personaje\n";
         cout << "3. Mostrar por generaciones\n";
@@ -391,19 +391,20 @@ int main() {
         cout << "7. Mostrar arbol	\n";
         cout << "8. Salir\n";
         cout << "Opcion: ";
-        cin >> op; // Lee la opción del usuario
+        cin >> op; // Lee la opciÃ³n del usuario
 
-        switch(op) { // Estructura de control para ejecutar la función según la opción
-            case 1: arbol.insertar(); break; // Llama a la función para insertar
-            case 2: arbol.eliminar(); break; // Llama a la función para eliminar
-            case 3: arbol.mostrarGeneraciones(); break; // Muestra el árbol por niveles (BFS)
+        switch(op) { // Estructura de control para ejecutar la funciÃ³n segÃºn la opciÃ³n
+            case 1: arbol.insertar(); break; // Llama a la funciÃ³n para insertar
+            case 2: arbol.eliminar(); break; // Llama a la funciÃ³n para eliminar
+            case 3: arbol.mostrarGeneraciones(); break; // Muestra el Ã¡rbol por niveles (BFS)
             case 4: arbol.preorden(); break; // Ejecuta el recorrido preorden
             case 5: arbol.inorden(); break; // Ejecuta el recorrido inorden
             case 6: arbol.postorden(); break; // Ejecuta el recorrido postorden
             case 7: arbol.mostrarArbolVertical(); break; // Muestra el diagrama vertical
         }
 
-    } while(op != 8); // El bucle se repite mientras la opción no sea 8 (Salir)
+    } while(op != 8); // El bucle se repite mientras la opciÃ³n no sea 8 (Salir)
 
-    return 0; // Retorna 0, indicando que el programa terminó con éxito
+    return 0; // Retorna 0, indicando que el programa terminÃ³ con Ã©xito
 }
+
